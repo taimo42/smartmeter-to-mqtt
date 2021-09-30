@@ -1,0 +1,15 @@
+SyncToHost.ps1
+node_modules
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+*.un~
+*~
+npm-debug.log
+dist/
+yarn.lock
+coverage
+.nyc_output
+.idea/*
+# VS Code stuff
+**/typings/**
+**/.vscode/**

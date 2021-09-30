@@ -1,0 +1,22 @@
+{
+    # the serial port where your smartmeter is connected
+    "smartmeterSerialPort":"REPLACE", 
+
+    # the url of the mqtt broker
+    "mqttBrokerUrl":"REPLACE", 
+
+    # optional (default: null), the mqtt topic used to publish the current power. 
+    # if null, no value will be published 
+    "mqttTopic_currentPower": "OPTIONAL", 
+
+    # optional (default: null), the mqtt topic used to publish the total injection
+    # if null, no value will be published 
+    "mqttTopic_totalInjection": "OPTIONAL", 
+
+    # optional (default: null), the mqtt topic used to publish the total withdrawal
+    # if null, no value will be published 
+    "mqttTopic_totalWithdrawal": "OPTIONAL", 
+
+    # optional (default: false), set to true to get some processing info in the console
+    "debug": true 
+}
