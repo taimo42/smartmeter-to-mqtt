@@ -1,40 +1,34 @@
 import { SmartMeterOutput } from './types';
 import { settings } from './settings';
-import { connect, MqttClient } from 'mqtt';
+import * as MQTT from 'async-mqtt'
 
 
 export async function publishToMqtt(values: SmartMeterOutput) {
-  var mqttClient  = connect(settings.mqttBrokerUrl)
-  await onConnectAsync(mqttClient);
-  if (settings.mqttTopic_currentPower != null) {
-    mqttClient.publish(settings.mqttTopic_currentPower, values.currentPower_W, handleMqttPublishError);
+
+  try {
+    var mqttClient  = await MQTT.connectAsync(settings.mqttBrokerUrl)
+    if (settings.debug) {
+      console.info("connected to MQTT server '%s'", settings.mqttBrokerUrl);
+    }
+
+    await publishTopic(mqttClient, settings.mqttTopic_currentPower, values.currentPower_W);
+    await publishTopic(mqttClient, settings.mqttTopic_totalInjection, values.totalInjection_KWh);
+    await publishTopic(mqttClient, settings.mqttTopic_totalWithdrawal, values.totalWithdrawal_KWh);
+
+    await mqttClient.end(false);  
   }
-  if (settings.mqttTopic_totalInjection != null) {
-    mqttClient.publish(settings.mqttTopic_totalInjection, values.totalInjection_KWh, handleMqttPublishError);
+  catch(e) {
+    console.error(e);
   }
-  if (settings.mqttTopic_totalWithdrawal != null) {
-      mqttClient.publish(settings.mqttTopic_totalWithdrawal, values.totalWithdrawal_KWh, handleMqttPublishError);
-  }
-  mqttClient.end(false);
 }
 
-async function onConnectAsync(mqttClient: MqttClient) : Promise<MqttClient> {
-  return new Promise((resolve) => {
-    mqttClient.on('connect', function () {
-      if (settings.debug) {
-        console.info('connected to MQTT server');
-      }
-      resolve(mqttClient);
-    })
-  })
+async function publishTopic(mqttClient: MQTT.AsyncClient, topic: string, value: string) {
+  if (topic != null) {
+    await mqttClient.publish(topic, value);
+    if (settings.debug) {    
+      console.info("MQTT message published: Topic: '%s', Value: '%s'", topic, value);
+    }
+  }
 }
 
-function handleMqttPublishError(error?: Error) {
-  if (error != null) {
-    console.error('error in mqtt publish:', error);
-  }
-  else if (settings.debug) {    
-    console.info('successfully published message');
-  }
-}
 
