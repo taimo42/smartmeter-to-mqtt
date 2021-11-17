@@ -24,7 +24,7 @@ export async function publishToMqtt(values: SmartMeterOutput) {
 
 async function publishTopic(mqttClient: MQTT.AsyncClient, topic: string, value: string) {
   if (topic != null) {
-    await mqttClient.publish(topic, value);
+    await mqttClient.publish(topic, value, {retain: true});
     if (settings.debug) {    
       console.info("MQTT message published: Topic: '%s', Value: '%s'", topic, value);
     }
