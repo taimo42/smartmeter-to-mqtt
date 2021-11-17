@@ -15,8 +15,35 @@ Run it
 
     npm run start
 
-You can easily execute this on a regular basic as a cron job by adding the following line to the crontab:
+You can easily execute this on a regular basis by using systemctl. Here is an example of the `smartmeter-to-mqtt.service` file which executes the application every minute:
 
-    0-59/1 * * * * node <smartmeter-to-mqtt-path>/dist/main.js
+```Ini
 
-(This will execute the application every minute.)
+[Unit]
+Description=smartmeter-to-mqtt
+After=multi-user.target
+Requires=network.target
+
+[Service]
+Type=simple
+User=pi
+ExecStart=/home/pi/.config/nvm/versions/node/v14.17.6/bin/node /home/pi/Source/smartmeter-to-mqtt/dist/main.js
+Restart=always
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target
+
+```
+Just put this file into `/etc/systemd/system/` and execute the following commands to enable it:
+
+```Bash
+sudo chmod 644 /etc/systemd/system/smartmeter-to-mqtt.service
+sudo systemctl daemon-reload
+sudo systemctl enable smartmeter-to-mqtt.service
+```
+
+
+
+
+
